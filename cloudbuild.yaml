@@ -7,3 +7,22 @@ steps:
     - | 
         terraform init 
   - timeout: "600s"
+
+  - id: 'tf plan'
+    name: 'hashicorp/terraform:1.0.0'
+    entrypoint: 'sh'
+    args:
+      - "-c"
+      - |
+          terraform plan
+  - timeout: "600s"
+
+  - id: 'tf apply'
+    name: 'hashicorp/terraform:1.0.0'
+    depends on: tf plan
+    entrypoint: 'sh'
+    args:
+      - "-c"
+      - |
+          terraform apply
+  - timeout: "600s"
