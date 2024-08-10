@@ -1,53 +1,11 @@
-provider "google" {
-  alias=  "testproject"
-  project   = "themarketplacetest"
-
+locals {
+  all_project_services = concat(var.gcp_service_list)
 }
 
-provider "google" {
-  alias=  "devproject"
-  project   = "themarketplacedev"
-
-}
-
-provider "google" {
-  alias=  "prodproject"
-  project   = "themarketplaceprod"
-
-}
-
-
-resource "google_project_service" "compute" {
-  provider=google.testproject
-  project = "themarketplacetest"
-  service = "compute.googleapis.com"
-}
-
-resource "google_project_service" "gke" {
-  provider=google.testproject
-  project = "themarketplacetest"
-  service = "container.googleapis.com"  
-}
-resource "google_project_service" "compute" {
-  provider=google.devproject
-  project = "themarketplacedev"
-  service = "compute.googleapis.com"
-}
-
-resource "google_project_service" "gke" {
-  provider=google.devproject
-  project = "themarketplacedev"
-  service = "container.googleapis.com"  
-}
-
-resource "google_project_service" "compute" {
-  provider=google.prodproject
-  project = "themarketplaceprod"
-  service = "compute.googleapis.com"
-}
-
-resource "google_project_service" "gke" {
-  provider=google.prodproject
-  project = "themarketplaceprod"
-  service = "container.googleapis.com"  
+resource "google_project_service" "enabled_apis" {
+  service                    = each.key
+  project                    = var.project-id
+  for_each                   = toset(local.all_project_services)
+  disable_dependent_services = true
+  disable_on_destroy         = true
 }
